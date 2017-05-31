@@ -1,0 +1,6 @@
+[package]
+name = "linregress"
+version = "0.1.0"
+authors = ["Chinmay Kousik <chinmaykousik1@gmail.com>"]
+
+[dependencies]
