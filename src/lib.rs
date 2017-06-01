@@ -1,3 +1,4 @@
+pub mod sgd;
 #[cfg(test)]
 mod tests {
     #[test]
