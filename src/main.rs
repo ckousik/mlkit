@@ -11,6 +11,6 @@ fn main() {
     println!("coefficients : {:?}", coeff);
 
     for (i, x) in inputs.iter().enumerate() {
-        println!("cost at {:?} = {:?}", x, sgd::sgd_cost_derivative(&x, &coeff, outputs[i]));
+        println!("cost at {:?} = {:?}", x, sgd::sgd_diff(&x, &coeff, outputs[i]));
     }
 }

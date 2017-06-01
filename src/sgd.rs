@@ -19,11 +19,11 @@ fn add_bias_term(input : &Vec<Vec<f32>>) -> Vec<Vec<f32>> {
     return _result;
 }
 
-// sgd_cost_derivative calculates the cost function derivative at a given point
+// sgd_diff calculates the difference of the hypothesis and observation at a given point
 // x: Vec<f32> : input vector
 // w: Vec<f32> : weights
 // y: f32 : expected output
-pub fn sgd_cost_derivative(x: &Vec<f32>, w: &Vec<f32>, y: f32) -> f32 {
+pub fn sgd_diff(x: &Vec<f32>, w: &Vec<f32>, y: f32) -> f32 {
     let hypothesis = x.iter().zip(w.iter()).fold(0.0, |sum, (xj, wj)| sum + (*xj)*(*wj));
     return hypothesis - y;
 }
@@ -41,7 +41,7 @@ pub fn sgd_optimizer_run(x_batch: &Vec<Vec<f32>>, y_batch: &Vec<f32>, coeff: &Ve
         // clone for computing cost function
         let ww = _w.clone();
         for (j,_) in ww.iter().enumerate() {
-            _w[j] = _w[j] - lr * sgd_cost_derivative(x, &ww, y_batch[i])*(&x[j]);
+            _w[j] = _w[j] - lr * sgd_diff(x, &ww, y_batch[i])*(&x[j]);
         }
     }
     return _w;
