@@ -7,10 +7,6 @@ fn main() {
         vec![5.0,6.0,7.0],
         vec![5.5,6.2,7.1]];
     let outputs = vec![1.0,2.0,2.1];
-    let coeff = sgd::sgd_optimizer(&inputs, &outputs, 0.005, 5);
+    let coeff = sgd::sgd_optimizer(&inputs, &outputs, 0.005, 10);
     println!("coefficients : {:?}", coeff);
-
-    for (i, x) in inputs.iter().enumerate() {
-        println!("cost at {:?} = {:?}", x, sgd::sgd_diff(&x, &coeff, outputs[i]));
-    }
 }

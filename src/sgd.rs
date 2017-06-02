@@ -23,7 +23,7 @@ fn add_bias_term(input : &Vec<Vec<f32>>) -> Vec<Vec<f32>> {
 // x: Vec<f32> : input vector
 // w: Vec<f32> : weights
 // y: f32 : expected output
-pub fn sgd_diff(x: &Vec<f32>, w: &Vec<f32>, y: f32) -> f32 {
+fn sgd_diff(x: &Vec<f32>, w: &Vec<f32>, y: f32) -> f32 {
     let hypothesis = x.iter().zip(w.iter()).fold(0.0, |sum, (xj, wj)| sum + (*xj)*(*wj));
     return hypothesis - y;
 }
@@ -33,15 +33,14 @@ pub fn sgd_diff(x: &Vec<f32>, w: &Vec<f32>, y: f32) -> f32 {
 // y_batch: Vec<f32> : outputs
 // coeff : Vec<f32> : current coefficients
 // lr : f32 : learning rate
-pub fn sgd_optimizer_run(x_batch: &Vec<Vec<f32>>, y_batch: &Vec<f32>, coeff: &Vec<f32>, lr: f32) -> Vec<f32> {
+fn sgd_optimizer_run(x_batch: &Vec<Vec<f32>>, y_batch: &Vec<f32>, coeff: &Vec<f32>, lr: f32) -> Vec<f32> {
     let x_b = add_bias_term(x_batch);
     let mut _w = coeff.clone();
 
     for (i,x) in x_b.iter().enumerate(){
         // clone for computing cost function
-        let ww = _w.clone();
-        for (j,_) in ww.iter().enumerate() {
-            _w[j] = _w[j] - lr * sgd_diff(x, &ww, y_batch[i])*(&x[j]);
+        for (j,_) in coeff.iter().enumerate() {
+            _w[j] = _w[j] - lr * sgd_diff(x, &_w, y_batch[i])*(&x[j]);
         }
     }
     return _w;
@@ -49,6 +48,10 @@ pub fn sgd_optimizer_run(x_batch: &Vec<Vec<f32>>, y_batch: &Vec<f32>, coeff: &Ve
 
 // sgd_optimizer takes x,y, learning rate, and number of epochs and uses stochastic gradient
 // descent to calculate regression coefficients
+// x : Vec<Vec<f32>> : input vector
+// y : Vec<f32> : observed outputs
+// lr: f32 : learning rate of the optimizer
+// epochs : u32 : number of times sgd optimization is run
 pub fn sgd_optimizer(x: &Vec<Vec<f32>>, y: &Vec<f32>, lr: f32, epochs: u32) -> Vec<f32>{ 
     // number of features + bias
     let mut _guess = vec![1.0; x[0].len() + 1];
