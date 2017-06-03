@@ -10,6 +10,8 @@
 // Parallelization:
 // Draw m random samples from the set. Run optimizer on each subset. Average results of each
 // parallel iteration. Results should converge as all subsets are drawn from the same data set.
+extern crate rand;
+use self::rand::Rng;
 
 use std::{f32, u32};
 
@@ -40,7 +42,9 @@ fn sgd_diff(x: &Vec<f32>, w: &Vec<f32>, y: f32) -> f32 {
 // lr : f32 : learning rate
 // mom: f32 : momentum
 fn sgd_optimizer_run(x_batch: &Vec<Vec<f32>>, y_batch: &Vec<f32>, coeff: &Vec<f32>, lr: f32, mom: f32) -> Vec<f32> {
+    // shuffle data set
     let x_b = add_bias_term(x_batch);
+    let (x_b, y_b) = shuffle_data_set(&x_b, y_batch);
     let mut _w = coeff.clone();
 
     // initialize momentum vector
@@ -49,7 +53,7 @@ fn sgd_optimizer_run(x_batch: &Vec<Vec<f32>>, y_batch: &Vec<f32>, coeff: &Vec<f3
     for (i,x) in x_b.iter().enumerate(){
         // clone for computing cost function
         for (j,_) in coeff.iter().enumerate() {
-            _momentum[j] = mom * _momentum[j] + lr*sgd_diff(x, &_w, y_batch[i]) * (&x[j]);
+            _momentum[j] = mom * _momentum[j] + lr*sgd_diff(x, &_w, y_b[i]) * (&x[j]);
             _w[j] = _w[j] - _momentum[j];
         }
     }
@@ -75,3 +79,29 @@ pub fn sgd_optimizer(x: &Vec<Vec<f32>>, y: &Vec<f32>, lr: f32, mom: f32, epochs:
 
     return _guess;
 }
+
+// Fisher-Yates shuffle algorithm
+fn shuffle_data_set (x_data: &Vec<Vec<f32>>, y_data: &Vec<f32>) -> (Vec<Vec<f32>>, Vec<f32>) {
+    let mut _x = x_data.clone();
+    let mut _y = y_data.clone();
+
+    let mut _rng = rand::thread_rng();
+
+    let mut i = x_data.len() - 1;
+
+    while i > 0 {
+        let j = _rng.gen::<usize>() % (i+1);
+        // swap without borrowing
+        let tmp = _x[i].clone();
+        _x[i] = _x[j].clone();
+        _x[j] = tmp;
+
+        let tmp = _y[i];
+        _y[i] = _y[j];
+        _y[j] = tmp;
+
+        i = i-1;
+    }
+    return (_x,_y);
+}
+
