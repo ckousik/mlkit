@@ -1,6 +1,6 @@
-extern crate linregress;
+extern crate mlkit;
 
-use linregress::sgd;
+use mlkit::sgd;
 
 fn main() {
     let inputs = vec![vec![1.0], vec![2.0], vec![3.0], vec![4.0], vec![5.0]];
