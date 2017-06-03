@@ -3,10 +3,8 @@ extern crate linregress;
 use linregress::sgd;
 
 fn main() {
-    let inputs = vec![vec![2.0,3.0,4.0], 
-        vec![5.0,6.0,7.0],
-        vec![5.5,6.2,7.1]];
-    let outputs = vec![1.0,2.0,2.1];
-    let coeff = sgd::sgd_optimizer(&inputs, &outputs, 0.005, 10);
+    let inputs = vec![vec![1.0], vec![2.0], vec![3.0], vec![4.0], vec![5.0]];
+    let outputs = vec![7.0, 9.0, 11.0, 13.0, 15.0];
+    let coeff = sgd::sgd_optimizer(&inputs, &outputs, 0.055, 0.9, 15);
     println!("coefficients : {:?}", coeff);
 }

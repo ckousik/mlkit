@@ -4,7 +4,12 @@
 // Version : 0.0.1
 //
 // TODO: Improve performance for larger data sets
-// TODO: reduce cloning if possible, although only smaller vectors are cloned
+// TODO: parallelization
+// TODO: momentum
+//
+// Parallelization:
+// Draw m random samples from the set. Run optimizer on each subset. Average results of each
+// parallel iteration. Results should converge as all subsets are drawn from the same data set.
 
 use std::{f32, u32};
 
@@ -33,14 +38,19 @@ fn sgd_diff(x: &Vec<f32>, w: &Vec<f32>, y: f32) -> f32 {
 // y_batch: Vec<f32> : outputs
 // coeff : Vec<f32> : current coefficients
 // lr : f32 : learning rate
-fn sgd_optimizer_run(x_batch: &Vec<Vec<f32>>, y_batch: &Vec<f32>, coeff: &Vec<f32>, lr: f32) -> Vec<f32> {
+// mom: f32 : momentum
+fn sgd_optimizer_run(x_batch: &Vec<Vec<f32>>, y_batch: &Vec<f32>, coeff: &Vec<f32>, lr: f32, mom: f32) -> Vec<f32> {
     let x_b = add_bias_term(x_batch);
     let mut _w = coeff.clone();
+
+    // initialize momentum vector
+    let mut _momentum = vec![0.0; _w.len()];
 
     for (i,x) in x_b.iter().enumerate(){
         // clone for computing cost function
         for (j,_) in coeff.iter().enumerate() {
-            _w[j] = _w[j] - lr * sgd_diff(x, &_w, y_batch[i])*(&x[j]);
+            _momentum[j] = mom * _momentum[j] + lr*sgd_diff(x, &_w, y_batch[i]) * (&x[j]);
+            _w[j] = _w[j] - _momentum[j];
         }
     }
     return _w;
@@ -51,14 +61,17 @@ fn sgd_optimizer_run(x_batch: &Vec<Vec<f32>>, y_batch: &Vec<f32>, coeff: &Vec<f3
 // x : Vec<Vec<f32>> : input vector
 // y : Vec<f32> : observed outputs
 // lr: f32 : learning rate of the optimizer
+// mom : f32: momentum
 // epochs : u32 : number of times sgd optimization is run
-pub fn sgd_optimizer(x: &Vec<Vec<f32>>, y: &Vec<f32>, lr: f32, epochs: u32) -> Vec<f32>{ 
+pub fn sgd_optimizer(x: &Vec<Vec<f32>>, y: &Vec<f32>, lr: f32, mom: f32, epochs: u32) -> Vec<f32>{ 
     // number of features + bias
     let mut _guess = vec![1.0; x[0].len() + 1];
+
     let mut _e = epochs;
     while _e > 0 {
-        _guess = sgd_optimizer_run(x,y,&_guess, lr);
+        _guess = sgd_optimizer_run(x,y,&_guess, lr,mom);
         _e = _e - 1;
     }
+
     return _guess;
 }
