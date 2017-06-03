@@ -5,3 +5,4 @@ authors = ["Chinmay Kousik <chinmaykousik1@gmail.com>"]
 
 [dependencies]
 rand = "*"
+num = "*"
